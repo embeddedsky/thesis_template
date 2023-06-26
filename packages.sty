@@ -1,0 +1,229 @@
+% If you want to write in two or more languages, you have to instruct babel with:
+% \usepackage[secoundary_language,main_language]{babel} 
+\usepackage[english]{babel}
+
+% To change the default label for chapter in Esercitazione
+%\addto\captionsitalian{\renewcommand{\chaptername}{Esercitazione}}
+
+%
+% ENCODING
+
+\usepackage{import}
+
+% In order to enable the accent marks
+\usepackage[utf8]{inputenc}
+% To enable the hyphenation for languages with accented characters
+\usepackage[T1]{fontenc}
+% Alternatively the accent marks can be written with "cos\'{i}"
+
+\usepackage{tocloft} % customize TOC font/spacing
+
+\usepackage{fancyhdr}
+
+% Make chapter numbers into string words 1 -> ONE
+\usepackage{fmtcount}
+\makeatletter
+\renewcommand{\@makechapterhead}[1]{\vspace *{40\p@ }{\parindent \z@ 
+\raggedright \normalfont \ifnum \c@secnumdepth >\m@ne \Huge \bfseries 
+\@chapapp \space \Numberstring{chapter} \vskip 10\p@ \fi #1\par \nobreak \vskip 30\p@ }}
+\makeatother
+
+
+\setlength{\marginparwidth}{0pt}
+\setlength{\marginparsep}{0pt}
+\setlength{\oddsidemargin}{0in} %\setlength{\oddsidemargin}{0.23in}
+\setlength{\evensidemargin}{0in}
+\setlength{\textwidth}{6.5in} %\setlength{\textwidth}{6in}
+\setlength{\topmargin}{0in}
+\setlength{\headheight}{14.5pt} %\setlength{\headheight}{0.125in}
+\setlength{\headsep}{0.2in}
+\setlength{\textheight}{8.875in} %\setlength{\textheight}{8.625in}
+\setlength{\footskip}{0.5in} %\setlength{\footskip}{0.625in}
+
+\setlength{\parindent}{1em}
+\setlength{\parskip}{1em}
+\renewcommand{\baselinestretch}{1.6}
+
+\pagestyle{fancy}
+\fancyfoot{}
+\fancyfoot[LE,RO]{\thepage} % page number in "outer" position of footer line
+\fancyhead{}
+\fancyhead[LE]{\textit{\nouppercase{\leftmark}}}% Chatper on Even page, Left position
+\fancyhead[RO]{\textit{\nouppercase{\rightmark}}}% Section on Odd page, Right position
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername\ \thechapter.\ #1}{}} % Redefining chaptermark to include "Chapter x."
+\fancypagestyle{plain}{
+  \fancyhead{}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+%
+% INDICES
+%
+% To enable and print the Analytical Index
+% I didn't use it because it would have been too heavy
+\usepackage{makeidx}
+
+% To enable and print the glossary and index of symbols
+\usepackage[acronym]{glossaries}
+
+
+% To set the format of citation
+\makeglossaries
+\usepackage[style=authoryear-comp,
+  maxcitenames=1, mincitenames=1, maxbibnames=999, backend=biber,refsection=part,natbib=true,backend=biber,url=false]{biblatex}
+  
+\DeclareNameFormat{labelname}{%
+  \ifboolexpr{test {\ifnumcomp{\value{listcount}}{=}{1}}
+              or test {\ifnumcomp{\value{listtotal}}{=}{2}}}
+    {\usebibmacro{labelname:indiv}}
+    {\ifboolexpr{test {\ifnumcomp{\value{listtotal}}{>}{2}}
+                 or test {\ifciteseen}}
+       {\ifnumcomp{\value{listcount}}{=}{2}
+          {\printdelim{andothersdelim}\bibstring{andothers}}
+          {}}
+       {\usebibmacro{labelname:indiv}}}}
+
+\newbibmacro{labelname:indiv}{%
+  \ifcase\value{uniquename}%
+    \usebibmacro{name:family}
+      {\namepartfamily}
+      {\namepartgiven}
+      {\namepartprefix}
+      {\namepartsuffix}%
+  \or
+    \ifuseprefix
+      {\usebibmacro{name:given-family}
+        {\namepartfamily}
+        {\namepartgiveni}
+        {\namepartprefix}
+        {\namepartsuffixi}}
+      {\usebibmacro{name:given-family}
+        {\namepartfamily}
+        {\namepartgiveni}
+        {\namepartprefixi}
+        {\namepartsuffixi}}%
+  \or
+    \usebibmacro{name:given-family}
+      {\namepartfamily}
+      {\namepartgiven}
+      {\namepartprefix}
+      {\namepartsuffix}%
+  \fi
+}
+
+\makeatletter
+\renewbibmacro*{cite}{%
+  \iffieldundef{shorthand}
+    {\ifthenelse{\ifnameundef{labelname}\OR\iffieldundef{labelyear}}
+       {\usebibmacro{cite:label}%
+        \setunit{\printdelim{nonameyeardelim}}%
+        \usebibmacro{cite:labeldate+extradate}%
+        \usebibmacro{cite:reinit}}
+       {\iffieldequals{namehash}{\cbx@lasthash}
+          {\ifthenelse{\iffieldequals{labelyear}{\cbx@lastyear}\AND
+                       \(\value{multicitecount}=0\OR\iffieldundef{postnote}\)}
+             {\setunit{\addcomma}%
+              \usebibmacro{cite:extradate}}
+             {\setunit{\compcitedelim}%
+              \usebibmacro{cite:labeldate+extradate}%
+              \savefield{labelyear}{\cbx@lastyear}}}
+          {\printnames[labelname][-\value{listtotal}]{labelname}%
+           \setunit{\printdelim{nameyeardelim}}%
+           \usebibmacro{cite:labeldate+extradate}%
+           \savefield{namehash}{\cbx@lasthash}%
+           \savefield{labelyear}{\cbx@lastyear}}}}
+    {\usebibmacro{cite:shorthand}%
+     \usebibmacro{cite:reinit}}%
+  \setunit{\multicitedelim}}
+
+\renewbibmacro*{textcite}{%
+  \iffieldequals{namehash}{\cbx@lasthash}
+    {\iffieldundef{shorthand}
+       {\ifthenelse{\iffieldequals{labelyear}{\cbx@lastyear}\AND
+                    \(\value{multicitecount}=0\OR\iffieldundef{postnote}\)}
+          {\setunit{\addcomma}%
+           \usebibmacro{cite:extradate}}
+          {\setunit{\compcitedelim}%
+           \usebibmacro{cite:labeldate+extradate}%
+           \savefield{labelyear}{\cbx@lastyear}}}
+       {\setunit{\compcitedelim}%
+        \usebibmacro{cite:shorthand}%
+        \global\undef\cbx@lastyear}}
+    {\ifnameundef{labelname}
+       {\iffieldundef{shorthand}
+          {\usebibmacro{cite:label}%
+           \setunit{%
+             \global\booltrue{cbx:parens}%
+             \printdelim{nonameyeardelim}\bibopenparen}%
+           \ifnumequal{\value{citecount}}{1}
+             {\usebibmacro{prenote}}
+             {}%
+           \usebibmacro{cite:labeldate+extradate}}
+          {\usebibmacro{cite:shorthand}}}
+       {\printnames[labelname][-\value{listtotal}]{labelname}%
+        \setunit{%
+          \global\booltrue{cbx:parens}%
+          \printdelim{nameyeardelim}\bibopenparen}%
+        \ifnumequal{\value{citecount}}{1}
+          {\usebibmacro{prenote}}
+          {}%
+        \iffieldundef{shorthand}
+          {\iffieldundef{labelyear}
+             {\usebibmacro{cite:label}}
+             {\usebibmacro{cite:labeldate+extradate}}%
+           \savefield{labelyear}{\cbx@lastyear}}
+          {\usebibmacro{cite:shorthand}%
+           \global\undef\cbx@lastyear}}%
+     \stepcounter{textcitecount}%
+     \savefield{namehash}{\cbx@lasthash}}%
+  \setunit{%
+    \ifbool{cbx:parens}
+      {\bibcloseparen\global\boolfalse{cbx:parens}}
+      {}%
+    \textcitedelim}}
+\makeatother
+\bibliography{bibliography.bib}
+
+\usepackage{amsmath}
+\usepackage{ifpdf}
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+\else
+  \usepackage[dvips]{graphicx}
+\fi
+\usepackage{afterpage}
+\usepackage{rotating}
+\usepackage{url}
+\urlstyle{rm}
+
+% The hyperref package provides automatic linking and bookmarking for the table
+% of contents, index, equation references, and figure references.
+%
+% To include a link in your pdf use \href{URL}{Text to be displayed}.  If your
+% display text is the URL, you probably should use the \url{} command discussed
+% above.
+%
+% To add a bookmark in the pdf you can use \pdfbookmark.  You can look up its usage
+% in the hyperref package documentation
+\usepackage[bookmarksnumbered,pdfpagelabels=true,plainpages=false,colorlinks=true,
+            linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\usepackage{manfnt}
+\usepackage[utf8]{inputenc}
+\DeclareUnicodeCharacter{2212}{ }
+\DeclareUnicodeCharacter{FB01}{ }
+\setcounter{secnumdepth}{4}
+
+% Package for tables
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{tablefootnote}
+\usepackage{footnote}
+\usepackage{booktabs}
+
+
+% Add your own packages and define your own commands here:
+
+
+
